@@ -11,7 +11,7 @@ typedef struct due_date due_date;
 
 // Creates an event with given activity and time. next is by
 // default set to NULL;
-event* event_create(char* activity, time_t time, event* next);
+event* event_create(char* activity, due_date time);
 
 // Inserts an event into its proper location
 void event_insert(event* new_event, event* head);

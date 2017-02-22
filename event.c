@@ -16,12 +16,12 @@ struct event {
 };
 
 
-event* event_create(char* activity, due_date time, event* next){
+event* event_create(char* activity, due_date time){
 	event* new_event = malloc(sizeof(char*) + sizeof(due_date) + sizeof(event*));
 	new_event->time.month = time.month;
 	new_event->time.date = time.date;
 	new_event->time.hour = time.hour;
-	new_event->next = next;
+	new_event->next = NULL;
 	new_event->activity = malloc(strlen(activity)+1);
 	strcpy(new_event->activity, activity);
 	return new_event;

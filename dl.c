@@ -42,3 +42,7 @@ void deadlines_display_all(deadlines* dl){
 		i++;
 	}
 }
+
+void print_usage(){
+	printf("//TODO\n");
+}
