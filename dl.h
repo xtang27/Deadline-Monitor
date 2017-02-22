@@ -10,10 +10,10 @@ typedef struct deadlines deadlines;
 deadlines* create_from_file(char* filename);
 
 // Insert a new event into the linked list
-void insert_event(event* input);
+void deadline_insert(event* input);
 
 // Remove an event from the linked list
-void remove_event(event* input);
+void deadline_remove(event* input);
 
 // Destroys and free all memories used in a deadlines object
 void deadlines_destroy(deadlines* input);
@@ -22,6 +22,6 @@ void deadlines_destroy(deadlines* input);
 void write_to_file(char* filename, deadlines* dl);
 
 // Print deadlines to stdout according to args
-void deadlines_display(char* args, deadlines* dl);
+void deadlines_display_all(deadlines* dl);
 
 

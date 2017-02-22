@@ -7,14 +7,38 @@ struct deadlines {
 	event* head; // head of the linked list
 };
 
-deadlines* create_from_file(char* filename){}
+deadlines* create_from_file(char* filename){
 
-void insert_event(event* input){}
+}
 
-void remove_event(event* input){}
+void deadline_insert(deadlines* dl, event* input){
+	event_insert(input, dl->head);
+	(dl->size)++;
+}
 
-void deadlines_destroy(deadlines* input){}
+void deadline_remove(deadlines* dl, event* input){
+	event_remove(input, dl->head);
+	(dl->size)--;
+}
 
-void write_to_file(char* filename, deadlines* dl){}
+void deadlines_destroy(deadlines* input){
+	while(head != NULL){
+		event* temp = head;
+		head = head->next;
+		event_destroy(temp);
+		size--;
+	}
+}
 
-void deadlines_display(char* args, deadlines* dl){}
+void write_to_file(char* filename, deadlines* dl){
+
+}
+
+void deadlines_display_all(deadlines* dl){
+	event* pos = dl->head;
+	int i = 1;
+	while(pos != NULL){
+		printf("%d: %s, %zu/%zu %zu:00, \n", i, pos->activity, pos->time.month, pos->time.date, pos->time.hour);
+		i++;
+	}
+}
