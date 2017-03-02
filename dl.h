@@ -3,8 +3,15 @@
  * CS 241 Honor: Xiao Tang
  **/
 
+#ifndef DL_H
+#define DL_H
+#include "event.h"
+
 struct deadlines;
-typedef struct deadlines deadlines;
+typedef struct deadlines {
+	size_t size; // number of events in the linked list
+	event* head; // head of the linked list
+}deadlines;
 
 // Creates a new deadlines object from a file input
 deadlines* create_from_file(char* filename);
@@ -25,5 +32,7 @@ void write_to_file(char* filename, deadlines* dl);
 void deadlines_display_all(deadlines* dl);
 
 void print_usage();
+
+#endif
 
 

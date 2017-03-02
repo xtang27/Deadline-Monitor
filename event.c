@@ -3,18 +3,9 @@
  * CS 241 Honor: Xiao Tang
  **/
 
-struct due_date{
-	size_t month;
-	size_t date;
-	size_t hour;
-}
-
-struct event {
-	due_date time;
-	event* next;
-	char* activity;	
-};
-
+#include "event.h"
+#include <string.h>
+#include <stdio.h>
 
 event* event_create(char* activity, due_date time){
 	event* new_event = malloc(sizeof(char*) + sizeof(due_date) + sizeof(event*));

@@ -5,9 +5,14 @@
 
 // Main function of Deadline-Monitor
 
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include "dl.h"
+
 int main(int argc, char* argv[]){
 	deadlines *dl = create_from_file("data.bin");
-	while(true){
+	while(1){
 		char* cmd = NULL;
 		size_t length = 0;
 		int read = 0;
@@ -31,7 +36,7 @@ int main(int argc, char* argv[]){
 			deadline_insert(dl, event_create(act, d));
 		}
 		else if(strcmp(strtok(cmd, " "),"rm")){
-			dl_remove(dl, event_find(strtok(NULL, " "), dl->head));
+			deadline_remove(dl, event_find(strtok(NULL, " "), dl->head));
 		}
 		else{
 			print_usage();

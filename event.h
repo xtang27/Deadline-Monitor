@@ -2,12 +2,25 @@
  * Deadline-Monitor
  * CS 241 Honor: Xiao Tang
  **/
+#ifndef EVENT_H
+#define EVENT_H
 
-struct event;
-typedef struct event event;
+#include <stdlib.h>
 
 struct due_date;
-typedef struct due_date due_date;
+typedef struct due_date{
+	size_t month;
+	size_t date;
+	size_t hour;
+}due_date;
+
+struct event;
+typedef struct event {
+	due_date time;
+	struct event* next;
+	char* activity;	
+}event;
+
 
 // Creates an event with given activity and time. next is by
 // default set to NULL;
@@ -24,3 +37,5 @@ event* event_find(char* activity, event* head);
 
 // Destroys a single event and deallocates its memory
 void event_destroy(event* target);
+
+#endif

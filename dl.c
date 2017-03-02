@@ -2,13 +2,50 @@
  * Deadline-Monitor
  * CS 241 Honor: Xiao Tang
  **/
-struct deadlines {
-	size_t size; // number of events in the linked list
-	event* head; // head of the linked list
-};
+
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include "dl.h"
 
 deadlines* create_from_file(char* filename){
-
+	FILE *file = fopen(filename, "r");
+	if(!file){
+		perror("fail to open");
+		return NULL;
+	}
+	deadlines *dl = malloc(sizeof(deadlines));
+	dl->size = 0;
+	dl->head = NULL;
+	event* tail = NULL;
+	while(1){
+		event *e = malloc(sizeof(event));
+		size_t rc = fread(&e->time, sizeof(due_date), 1,file);
+		if(rc < sizeof(due_date)){
+			free(e);
+			return dl;
+		}
+		char buff[256];
+		size_t c = 0;
+		char read;
+		fread(&read, 1, 1, file);
+		while(read != '\0'){
+			buff[c] = read;
+			c++;
+		}
+		buff[c] = '\0';
+		c++;
+		char *act = malloc(c);
+		strncpy(act, buff,c);
+		if(dl->head == NULL){
+			dl->head = e;
+			tail = e;
+		}else{
+			tail->next = e;
+			tail = e;
+		}
+		dl->size++;
+	}
 }
 
 void deadline_insert(deadlines* dl, event* input){
@@ -21,16 +58,24 @@ void deadline_remove(deadlines* dl, event* input){
 	(dl->size)--;
 }
 
-void deadlines_destroy(deadlines* input){
-	while(head != NULL){
-		event* temp = head;
-		head = head->next;
+void deadlines_destroy(deadlines* dl){
+	while(dl->head != NULL){
+		event* temp = dl->head;
+		dl->head = dl->head->next;
 		event_destroy(temp);
-		size--;
+		dl->size--;
 	}
 }
 
 void write_to_file(char* filename, deadlines* dl){
+		FILE* file = fopen(filename, "w");
+		event* e = dl->head;
+		while(e != NULL){
+			fwrite(e, sizeof(struct due_date), 1, file);
+			fwrite(e->activity, 1, strlen(e->activity)+1, file);
+			e = e->next;
+		}
+		fclose(file);
 
 }
 
@@ -44,5 +89,5 @@ void deadlines_display_all(deadlines* dl){
 }
 
 void print_usage(){
-	printf("//TODO\n");
+	printf("Wrong Usage. \n");
 }
