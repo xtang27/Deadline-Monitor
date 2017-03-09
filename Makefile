@@ -1,13 +1,13 @@
 OBJS_DIR = .objs
 
 # define all of student executables
-EXE1=dl
+EXE1=dl_main
 EXES_STUDENT=$(EXE1)
 
 # tests are defined a little differently for this assignment, see below
 
 # list object file dependencies for each
-OBJS_SECURECP=$(EXE1).o event.o
+OBJS_SECURECP=$(EXE1).o event.o dl.o
 
 # set up compiler
 CC = clang
@@ -31,7 +31,7 @@ debug:   clean $(EXES_STUDENT:%=%-debug)
 
 
 # include dependencies
--include $(OBJS_DIR)/*.d
+# -include $(OBJS_DIR)/*.d
 
 $(OBJS_DIR):
 	@mkdir -p $(OBJS_DIR)
@@ -48,10 +48,10 @@ $(OBJS_DIR)/%-release.o: %.c | $(OBJS_DIR)
 # exes
 # you will need a pair of exe and exe-debug targets for each exe
 $(EXE1)-debug: $(OBJS_SECURECP:%.o=$(OBJS_DIR)/%-debug.o)
-	$(LD) $^ dl_main.c $(LDFLAGS) -o deadline-debug
+	$(LD) $^ $(LDFLAGS) -o deadline-debug
 
 $(EXE1): $(OBJS_SECURECP:%.o=$(OBJS_DIR)/%-release.o)
-	$(LD) $^ dl_main.c $(LDFLAGS) -o deadline
+	$(LD) $^ $(LDFLAGS) -o deadline
 
 .PHONY: clean
 clean:

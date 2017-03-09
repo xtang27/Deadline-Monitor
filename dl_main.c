@@ -17,11 +17,12 @@ int main(int argc, char* argv[]){
 		size_t length = 0;
 		int read = 0;
 		read = getline(&cmd, &length, stdin);
-		if(strcmp(cmd, "exit") == 0){
+		cmd[strlen(cmd)] = '\0';
+		if(strcmp(cmd, "exit\n") == 0){
 			deadlines_destroy(dl);
 			exit(0);
 		}
-		else if(strcmp(cmd, "show") == 0){
+		else if(strcmp(cmd, "show\n") == 0){
 			deadlines_display_all(dl);
 		}
 		else if(strcmp(strtok(cmd, " "),"add")){
