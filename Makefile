@@ -55,4 +55,7 @@ $(EXE1): $(OBJS_SECURECP:%.o=$(OBJS_DIR)/%-release.o)
 
 .PHONY: clean
 clean:
-	rm -rf .objs $(EXES_STUDENT) $(EXES_STUDENT:%=%-debug)
+	rm -rf .objs $(EXES_STUDENT) $(EXES_STUDENT:%=%-debug
+reset: 
+	rm data.bin
+	touch data.bin
