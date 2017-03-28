@@ -12,36 +12,30 @@
 
 int main(int argc, char* argv[]){
 	deadlines *dl = create_from_file("data.bin");
-	while(1){
-		char* cmd = NULL;
-		size_t length = 0;
-		int read = 0;
-		read = getline(&cmd, &length, stdin);
-		cmd[strlen(cmd)] = '\0';
-		if(strcmp(cmd, "exit\n") == 0){
-			deadlines_destroy(dl);
-			exit(0);
-		}
-		else if(strcmp(cmd, "show\n") == 0){
-			deadlines_display_all(dl);
-		}
-		else if(strcmp(strtok(cmd, " "),"add")){
-			size_t mm = atoi(strtok(NULL, " "));
-			size_t dd = atoi(strtok(NULL, " "));
-			size_t hh = atoi(strtok(NULL, " "));
-			char* act = strtok(NULL, " ");
-			struct due_date d;
-			d.month = mm;
-			d.date = dd;
-			d.hour = hh;
-			deadline_insert(dl, event_create(act, d));
-		}
-		else if(strcmp(strtok(cmd, " "),"rm")){
-			deadline_remove(dl, event_find(strtok(NULL, " "), dl->head));
-		}
-		else{
-			print_usage();
-		}
-	}
+	int ch;
+  	ch = getopt(argc, argv, "a:r:");
+  	switch(ch){
+  		case 'a':
+  			size_t mm, dd, hh;
+  			sscanf(optarg, "%zu/%zu/%zu", dd, mm, hh);
+  			argc -= optind;
+  			argv += optind;
+  			char* event_name = calloc(1,strlen(*argv)+1);
+  			strcpy(event_name, *argv);
+  			due_date due;
+  			due.month = mm;
+  			due.date = dd;
+  			due.hour = hh;
+  			event* new_event = event_create(event_name, due);
+  			deadline_insert(dl, new_event);
+  			break;
+  		case 'r':
+  			deadline_remove(dl,event_find(*argv,dl->head));
+  			break;
+  		case -1:
+  			deadlines_display_all(dl);
+  	}
+  	write_to_file("data.bin", dl);
+  	deadline_destroy(dl);
 	return 0;
 }
