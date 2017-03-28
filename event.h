@@ -24,6 +24,8 @@ typedef struct event {
 
 // Creates an event with given activity and time. next is by
 // default set to NULL;
+
+size_t earlier(event* a, event* b);
 event* event_create(char* activity, due_date time);
 
 // Inserts an event into its proper location

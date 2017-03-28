@@ -19,6 +19,7 @@ event* event_create(char* activity, due_date time){
 }
 
 size_t earlier(event* a, event* b){
+	if(a == NULL)return 0;
 	if(a->time.month > b->time.month){
 		return 0;
 	}
@@ -36,17 +37,17 @@ void event_insert(event* new_event, event* head){
 	event* position = head;
 	if(head == NULL){
 		head = new_event;
+		return;
 	}
-	while(earlier(position, new_event) && position->next != NULL){
+	while(earlier(position, new_event)){
 		prev = position;
 		position = position->next;
 	}
 	if(prev == NULL){
 		new_event->next = head;
 		head = new_event;
-	}else if(position->next == NULL && earlier(position, head)){
-		position->next = new_event;
-	}else{
+	}
+	else{
 		prev->next = new_event;
 		new_event->next = position;
 	}
