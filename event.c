@@ -73,6 +73,7 @@ event* event_find(char* activity, event* head){
 		if(strcmp(position->activity, activity) == 0){
 			return position;
 		}
+		position = position->next;
 	}
 	return position;
 }
