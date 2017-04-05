@@ -31,6 +31,9 @@ void write_to_file(char* filename, deadlines* dl);
 // Print deadlines to stdout according to args
 void deadlines_display_all(deadlines* dl);
 
+// Set up TCP server to send out data to another machine
+void deadlines_send()
+
 void print_usage();
 
 #endif
