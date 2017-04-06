@@ -148,11 +148,12 @@ void deadlines_send(){
 	size_t c = 0;
 	char read;
 	ssize_t read_ret = fread(&read, 1, 1, file);
-	while(read != 0){
+	while(read_ret != 0){
 		buff[c] = read;
 		c++;
 		read_ret = fread(&read, 1, 1, file);
 	}
+	
 	printf("Read %zd chars from file\n", read_ret);
     int write_ret = write(client_fd, buff, c);
     //buffer[len] = '\0';
@@ -161,9 +162,44 @@ void deadlines_send(){
     printf("===\n");
     // printf("%s\n", buffer);
     fclose(file);
-    freeaddrinfo(&hints);
+    //freeaddrinfo(&hints);
 
     // return 0;
+}
+
+void deadlines_receive(){
+	int s;
+	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	struct addrinfo hints, *result;
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_INET; /* IPv4 only */
+	hints.ai_socktype = SOCK_STREAM; /* TCP */
+
+	s = getaddrinfo(NULL, "1234", &hints, &result);
+	if (s != 0) {
+	    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+        exit(1);
+	}
+
+	if(connect(sock_fd, result->ai_addr, result->ai_addrlen) == -1){
+        perror("connect");
+        exit(2);
+    }
+    FILE* file = fopen("test.bin", "w");
+    size_t c = 0;
+    char rr;
+    ssize_t read_ret = read(sock_fd, &rr, 1);
+    while(read_ret != 0){
+    	fwrite(&rr, 1, 1, file);
+    	read_ret = read(sock_fd, &rr, 1);
+    	c++;
+    }
+    printf("Read %zd chars from server\n", c);
+    fclose(file);
+    //freeaddrinfo(&hints);
+    //freeaddrinfo(result);
+
 }
 
 void print_usage(){

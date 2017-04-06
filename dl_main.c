@@ -13,7 +13,7 @@
 int main(int argc, char* argv[]){
 	deadlines *dl = create_from_file("data.bin");
 	int ch;
-  	ch = getopt(argc, argv, "a:r:");
+  	ch = getopt(argc, argv, "a:r:sg");
   	size_t mm, dd, hh;
   	switch(ch){
 	  	case 'a':
@@ -31,6 +31,12 @@ int main(int argc, char* argv[]){
 	  		break;
 	  	case 'r':
 	  		deadline_remove(dl,event_find(optarg,dl->head));
+	  		break;
+	  	case 's':
+	  		deadlines_send();
+	  		break;
+	  	case 'g':
+	  		deadlines_receive();
 	  		break;
 	  	case -1:
 	  		deadlines_display_all(dl);

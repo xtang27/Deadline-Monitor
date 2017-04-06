@@ -32,7 +32,9 @@ void write_to_file(char* filename, deadlines* dl);
 void deadlines_display_all(deadlines* dl);
 
 // Set up TCP server to send out data to another machine
-void deadlines_send()
+void deadlines_send();
+
+void deadlines_receive();
 
 void print_usage();
 
