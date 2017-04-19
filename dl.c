@@ -285,13 +285,14 @@ void deadlines_receive(char* host, char* port, char* user_name){
 		if(respond == '1'){
 			ssize_t read_ret = read(sock_fd, rr, 1024);
 		    while(read_ret != 0){
-		    	fwrite(rr, read_ret, 1, file);
+		    	written += fwrite(rr, 1, read_ret, file);
 		    	memset(rr, 0, 1024);
 		    	c += read_ret;
 		    	read_ret = read(sock_fd, rr, 1024);
 		    	
 		    }
 		    printf("Read %zd bytes from server\n", c);
+		    printf("Wrote %zu bytes to file\n", written);
 		}else{
 			printf("No data found for user: %s\n", user_name);
 		}
