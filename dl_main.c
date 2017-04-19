@@ -47,8 +47,10 @@ int main(int argc, char* argv[]){
 	  		// sscanf(optarg, "%s:%s", host, port);
 	  		if(argc == 5){
 	  			deadlines_receive(argv[2], argv[3], argv[4]);
+	  			dl = create_from_file("data.bin");
 	  		}else if(argc == 4){
 	  			deadlines_receive(argv[2], argv[3], NULL);
+	  			dl = create_from_file("data.bin");
 	  		}else{
 	  			print_usage();
 	  			return 0;
