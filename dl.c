@@ -258,17 +258,20 @@ void deadlines_receive(char* host, char* port, char* user_name){
     FILE* file = fopen("data.bin", "w");
     size_t c = 0;
     char rr[1024];
-
+    memset(rr, 0, 1024);
+    size_t written = 0;
     if(user_name == NULL){
 	    ssize_t read_ret = read(sock_fd, &rr, 1024);
 	    while(read_ret != 0){
-	    	fwrite(rr, read_ret, 1, file);
+	    	written += fwrite(rr, 1, read_ret, file);
+
 	    	memset(rr, 0, 1024);
 	    	c += read_ret;
 	    	read_ret = read(sock_fd, &rr, 1024);
 	    	
 	    }
 	    printf("Read %zd bytes from server\n", c);
+	    printf("Wrote %zu bytes to file\n", written);
 	    fclose(file);
 	}else{
 		char request[36];
