@@ -262,7 +262,7 @@ void deadlines_receive(char* host, char* port, char* user_name){
     if(user_name == NULL){
 	    ssize_t read_ret = read(sock_fd, &rr, 1024);
 	    while(read_ret != 0){
-	    	fwrite(&rr, read_ret, 1, file);
+	    	fwrite(rr, read_ret, 1, file);
 	    	memset(rr, 0, 1024);
 	    	c += read_ret;
 	    	read_ret = read(sock_fd, &rr, 1024);
