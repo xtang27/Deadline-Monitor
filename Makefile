@@ -2,13 +2,15 @@ OBJS_DIR = .objs
 
 # define all of student executables
 EXE1=dl_main
-EXES_STUDENT=$(EXE1)
+EXES_STUDENT=$(EXE1) $(EXE2)
+
+EXE2=dl_server
 
 # tests are defined a little differently for this assignment, see below
 
 # list object file dependencies for each
-OBJS_SECURECP=$(EXE1).o event.o dl.o
-
+OBJS_DL=$(EXE1).o event.o dl.o
+OBJS_SERVER=$(EXE2).o event.o dl.o
 # set up compiler
 CC = clang
 WARNINGS = -Wall -Wextra -Wno-tautological-compare -Wno-sign-compare -Werror -Wno-error=unused-parameter
@@ -47,15 +49,21 @@ $(OBJS_DIR)/%-release.o: %.c | $(OBJS_DIR)
 
 # exes
 # you will need a pair of exe and exe-debug targets for each exe
-$(EXE1)-debug: $(OBJS_SECURECP:%.o=$(OBJS_DIR)/%-debug.o)
+$(EXE1)-debug: $(OBJS_DL:%.o=$(OBJS_DIR)/%-debug.o)
 	$(LD) $^ $(LDFLAGS) -o deadline-debug
 
-$(EXE1): $(OBJS_SECURECP:%.o=$(OBJS_DIR)/%-release.o)
+$(EXE1): $(OBJS_DL:%.o=$(OBJS_DIR)/%-release.o)
 	$(LD) $^ $(LDFLAGS) -o deadline
+
+$(EXE2)-debug: $(OBJS_SERVER:%.o=$(OBJS_DIR)/%-debug.o)
+	$(LD) $^ $(LDFLAGS) -o dl_server-debug
+
+$(EXE2): $(OBJS_SERVER:%.o=$(OBJS_DIR)/%-release.o)
+	$(LD) $^ $(LDFLAGS) -o dl_server
 
 .PHONY: clean
 clean:
-	rm -rf .objs $(EXES_STUDENT) $(EXES_STUDENT:%=%-debug)
+	rm -rf .objs $(EXES_STUDENT) $(EXES_STUDENT:%=%-debug) deadline deadline-debug
 reset: 
 	rm data.bin
 	touch data.bin

@@ -129,9 +129,9 @@ void deadline_push(char* host, char* port, char* user_name){
     }
     char buf[36];
     memset(buf, 0, 36);
-    sprintf(buf, "%s\n", user_name);
-    write(sock_fd, "PUSH\n", strlen("PUSH\n"));
+    sprintf(buf, "%s\n", user_name);   
     write(sock_fd, buf, strlen(user_name));
+    write(sock_fd, "PUSH\n", strlen("PUSH\n"));
     FILE* file = fopen("data.bin", "r");
     char buff[1024];
 	size_t c = 0;
@@ -143,7 +143,7 @@ void deadline_push(char* host, char* port, char* user_name){
 		read_ret = fread(&read, 1, 1, file);
 	}
 	
-	printf("Read %zd bytes from file\n", read_ret);
+	printf("Read %zd bytes from file\n", c);
     int write_ret = write(sock_fd, buff, c);
     //buffer[len] = '\0';
 

@@ -51,6 +51,7 @@ int main(int argc, char* argv[]){
 	  	case 'p':
 	  		// sscanf(optarg, "%s:%s", host, port);
 	  		deadline_push(argv[2], argv[3], argv[4]);
+	  		break;
 	  	case -1:
 	  		deadlines_display_all(dl);
 	  		break;
