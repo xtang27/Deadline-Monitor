@@ -37,19 +37,29 @@ int main(int argc, char* argv[]){
 	  		deadline_remove(dl,event_find(optarg,dl->head));
 	  		break;
 	  	case 's':
-	  		
+	  		if(argc != 2){
+	  			print_usage();
+	  			return 0;
+	  		}
 	  		deadlines_send(optarg);
 	  		break;
 	  	case 'g':
 	  		// sscanf(optarg, "%s:%s", host, port);
 	  		if(argc == 5){
 	  			deadlines_receive(argv[2], argv[3], argv[4]);
-	  		}else{
+	  		}else if(argc == 4){
 	  			deadlines_receive(argv[2], argv[3], NULL);
+	  		}else{
+	  			print_usage();
+	  			return 0;
 	  		}
 	  		break;
 	  	case 'p':
 	  		// sscanf(optarg, "%s:%s", host, port);
+	  	    if(argc != 5){
+	  	    	print_usage();
+	  	    	return 0;
+	  	    }
 	  		deadline_push(argv[2], argv[3], argv[4]);
 	  		break;
 	  	case -1:

@@ -301,5 +301,11 @@ void deadlines_receive(char* host, char* port, char* user_name){
 }
 
 void print_usage(){
-	printf("Wrong Usage. \n");
+	printf("./deadline                                    Display all incoming deadlines \n");
+	printf("   [-a] [MM/DD/HH] [event name]               Add event \n");
+	printf("   [-r] [event name]                          Delete event \n");
+	printf("   [-p] [host] [port] [user name]             Push deadlines to server \n");
+	printf("   [-s] [port]                                Send deadlines directly on [port] of this machine\n");
+	printf("   [-g] [host] [port] [optional: user name]   Pull deadlines from the address given.\n");
+	printf("                                              If user name is provided, it will pull from the server\n");
 }

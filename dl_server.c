@@ -81,6 +81,7 @@ int main(int argc, char* argv[]){
 	    size_t request_len = 0;
 	    getline(&request, &request_len, user_input);
 	    if(strcmp(request, "PULL\n") == 0){
+            printf("=====Sending data to user=====\n");
 	    	char user_filename[36];
 	    	memset(user_filename, 0, 36);
 	    	sprintf(user_filename, "%s.bin", user_name);
@@ -94,14 +95,17 @@ int main(int argc, char* argv[]){
                 char buf[1024];
                 memset(buf, 0, 1024);
                 size_t bytes_read = fread(buf, 1, 1024, file);
+                size_t bytes_sent = 0;
                 while(bytes_read != 0){
                     ssize_t sent = 0;
                     while(sent != bytes_read){
                         sent = write(client_fd, buf + sent, bytes_read - sent);
                     }
+                    bytes_sent += sent;
                     memset(buf, 0, 1024);
                     bytes_read = fread(buf, 1, 1024, file);
                 }
+                printf("Sent %zu bytes \n", bytes_sent);
                 shutdown(client_fd, SHUT_RDWR);
                 fclose(file);
                 close(client_fd);
@@ -113,7 +117,7 @@ int main(int argc, char* argv[]){
             sprintf(user_filename, "%s.bin", user_name);
             FILE *file = fopen(user_filename, "w+");
             char buf[1024];
-            ssize_t bytes_read = read(client_fd, buf, 1024);
+            size_t bytes_read = fread(buf, 1, 1024, user_input);
             while(bytes_read){
                 fwrite(buf, 1, bytes_read, file);
                 memset(buf, 0, 1024);
