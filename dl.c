@@ -11,6 +11,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <ifaddrs.h>
+
 #include "dl.h"
 
 deadlines* create_from_file(char* filename){
@@ -105,7 +108,55 @@ void deadlines_display_all(deadlines* dl){
 	return;
 }
 
-void deadlines_send(){
+void deadline_push(char* host, char* port, char* user_name){
+	int s;
+	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	struct addrinfo hints, *result;
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_INET; /* IPv4 only */
+	hints.ai_socktype = SOCK_STREAM; /* TCP */
+
+	s = getaddrinfo(host, port, &hints, &result);
+	if (s != 0) {
+	    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+        exit(1);
+	}
+
+	if(connect(sock_fd, result->ai_addr, result->ai_addrlen) == -1){
+        perror("connect");
+        exit(2);
+    }
+    char buf[36];
+    memset(buf, 0, 36);
+    sprintf(buf, "%s\n", user_name);
+    write(sock_fd, "PUSH\n", strlen("PUSH\n"));
+    write(sock_fd, buf, strlen(user_name));
+    FILE* file = fopen("data.bin", "r");
+    char buff[1024];
+	size_t c = 0;
+	char read;
+	ssize_t read_ret = fread(&read, 1, 1, file);
+	while(read_ret != 0){
+		buff[c] = read;
+		c++;
+		read_ret = fread(&read, 1, 1, file);
+	}
+	
+	printf("Read %zd bytes from file\n", read_ret);
+    int write_ret = write(sock_fd, buff, c);
+    //buffer[len] = '\0';
+
+    printf("Wrote %d bytes\n", write_ret);
+    printf("===\n");
+    // printf("%s\n", buffer);
+    fclose(file);
+    shutdown(sock_fd, SHUT_RDWR);
+    close(sock_fd);
+
+}
+
+void deadlines_send(char* port){
 	int s;
     int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -114,8 +165,10 @@ void deadlines_send(){
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
-
-    s = getaddrinfo(NULL, "1234", &hints, &result);
+    //char port[10];
+    //memset(port, 0 ,10);
+    //sprintf(port, "%d", port_num);
+    s = getaddrinfo(NULL, port, &hints, &result);
     if (s != 0) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
             exit(1);
@@ -132,6 +185,22 @@ void deadlines_send(){
         exit(1);
     }
     
+    int required_family = AF_INET; // Change to AF_INET6 for IPv6
+    struct ifaddrs *myaddrs, *ifa;
+    getifaddrs(&myaddrs);
+    char mhost[256], mport[256];
+    for (ifa = myaddrs; ifa != NULL; ifa = ifa->ifa_next) {
+        int family = ifa->ifa_addr->sa_family;
+        if (family == required_family && ifa->ifa_addr) {
+            if (0 == getnameinfo(ifa->ifa_addr,
+                                (family == AF_INET) ? sizeof(struct sockaddr_in) :
+                                sizeof(struct sockaddr_in6),
+                                mhost, sizeof(mhost), mport, sizeof(mport)
+                                 , NI_NUMERICHOST | NI_NUMERICSERV  ))
+                puts(mhost);
+        }
+    }
+
     struct sockaddr_in *result_addr = (struct sockaddr_in *) result->ai_addr;
     printf("Listening on file descriptor %d, port %d\n", sock_fd, ntohs(result_addr->sin_port));
 
@@ -154,11 +223,11 @@ void deadlines_send(){
 		read_ret = fread(&read, 1, 1, file);
 	}
 	
-	printf("Read %zd chars from file\n", read_ret);
+	printf("Read %zd bytes from file\n", read_ret);
     int write_ret = write(client_fd, buff, c);
     //buffer[len] = '\0';
 
-    printf("Wrote %d chars\n", write_ret);
+    printf("Wrote %d bytes\n", write_ret);
     printf("===\n");
     // printf("%s\n", buffer);
     fclose(file);
@@ -167,7 +236,7 @@ void deadlines_send(){
     // return 0;
 }
 
-void deadlines_receive(){
+void deadlines_receive(char* host, char* port, char* user_name){
 	int s;
 	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -176,7 +245,7 @@ void deadlines_receive(){
 	hints.ai_family = AF_INET; /* IPv4 only */
 	hints.ai_socktype = SOCK_STREAM; /* TCP */
 
-	s = getaddrinfo(NULL, "1234", &hints, &result);
+	s = getaddrinfo(host, port, &hints, &result);
 	if (s != 0) {
 	    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
         exit(1);
@@ -186,17 +255,46 @@ void deadlines_receive(){
         perror("connect");
         exit(2);
     }
-    FILE* file = fopen("test.bin", "w");
+    FILE* file = fopen("data.bin", "w");
     size_t c = 0;
-    char rr;
-    ssize_t read_ret = read(sock_fd, &rr, 1);
-    while(read_ret != 0){
-    	fwrite(&rr, 1, 1, file);
-    	read_ret = read(sock_fd, &rr, 1);
-    	c++;
-    }
-    printf("Read %zd chars from server\n", c);
-    fclose(file);
+    char rr[1024];
+
+    if(user_name == NULL){
+	    ssize_t read_ret = read(sock_fd, &rr, 1024);
+	    while(read_ret != 0){
+	    	fwrite(&rr, read_ret, 1, file);
+	    	memset(rr, 0, 1024);
+	    	c += read_ret;
+	    	read_ret = read(sock_fd, &rr, 1024);
+	    	
+	    }
+	    printf("Read %zd bytes from server\n", c);
+	    fclose(file);
+	}else{
+		char request[36];
+		memset(request, 0, 36);
+		sprintf(request, "%s\n", user_name);
+		write(sock_fd, request, strlen(request));
+		write(sock_fd, "PULL\n", strlen("PULL\n"));
+		shutdown(sock_fd, SHUT_WR);
+		char respond;
+		read(sock_fd, &respond, 1);
+		if(respond == '1'){
+			ssize_t read_ret = read(sock_fd, rr, 1024);
+		    while(read_ret != 0){
+		    	fwrite(rr, read_ret, 1, file);
+		    	memset(rr, 0, 1024);
+		    	c += read_ret;
+		    	read_ret = read(sock_fd, rr, 1024);
+		    	
+		    }
+		    printf("Read %zd bytes from server\n", c);
+		}else{
+			printf("No data found for user: %s\n", user_name);
+		}
+	    fclose(file);
+
+	}
     //freeaddrinfo(&hints);
     //freeaddrinfo(result);
 

@@ -13,8 +13,12 @@
 int main(int argc, char* argv[]){
 	deadlines *dl = create_from_file("data.bin");
 	int ch;
-  	ch = getopt(argc, argv, "a:r:sg");
+  	ch = getopt(argc, argv, "a:r:s:g:p:");
   	size_t mm, dd, hh;
+  	char host[36];
+	char port[10];
+	memset(host, 0 ,36);
+	memset(port, 0 ,10);
   	switch(ch){
 	  	case 'a':
 	  		sscanf(optarg, "%zu/%zu/%zu", &mm, &dd, &hh);
@@ -33,11 +37,20 @@ int main(int argc, char* argv[]){
 	  		deadline_remove(dl,event_find(optarg,dl->head));
 	  		break;
 	  	case 's':
-	  		deadlines_send();
+	  		
+	  		deadlines_send(optarg);
 	  		break;
 	  	case 'g':
-	  		deadlines_receive();
+	  		// sscanf(optarg, "%s:%s", host, port);
+	  		if(argc == 5){
+	  			deadlines_receive(argv[2], argv[3], argv[4]);
+	  		}else{
+	  			deadlines_receive(argv[2], argv[3], NULL);
+	  		}
 	  		break;
+	  	case 'p':
+	  		// sscanf(optarg, "%s:%s", host, port);
+	  		deadline_push(argv[2], argv[3], argv[4]);
 	  	case -1:
 	  		deadlines_display_all(dl);
 	  		break;
