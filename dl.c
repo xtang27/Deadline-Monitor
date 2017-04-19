@@ -130,7 +130,7 @@ void deadline_push(char* host, char* port, char* user_name){
     char buf[36];
     memset(buf, 0, 36);
     sprintf(buf, "%s\n", user_name);   
-    write(sock_fd, buf, strlen(user_name));
+    write(sock_fd, buf, strlen(user_name)+1);
     write(sock_fd, "PUSH\n", strlen("PUSH\n"));
     FILE* file = fopen("data.bin", "r");
     char buff[1024];
