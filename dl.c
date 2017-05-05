@@ -19,8 +19,11 @@
 deadlines* create_from_file(char* filename){
 	FILE *file = fopen(filename, "r");
 	if(!file){
-		perror("fail to open");
-		return NULL;
+		file = fopen(filename, "w+");
+		if(!file){
+			perror("cannot open/create data file");
+			return NULL;
+		}
 	}
 	deadlines *dl = malloc(sizeof(deadlines));
 	dl->size = 0;
